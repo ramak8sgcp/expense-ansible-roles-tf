@@ -1,0 +1,34 @@
+- name: ansible to install pymysql
+  ansible.builtin.pip:
+    name: 
+    - PyMySQL
+    executable: pip3.9
+- name: install MYSQL server
+  ansible.builtin.package:
+    name: mysql-server
+    state: present
+- name: start mysql server
+  ansible.builtin.service:
+    name: mysqld
+    state: started
+    enabled: yes
+    #need to check root password is set or not if not then set
+    #search: ansible mysql module(ansble/community)
+- name: connect mysql server  #ansible mysql module
+  community.mysql.mysql_info:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_host: "{{ login_host }}"
+  ignore_errors: true
+  register: mysql_info
+
+- name: print mysql info
+  ansible.builtin.debug:
+    msg: "{{ mysql_info }}"
+
+- name: setup MySQL root password
+  ansible.builtin.command: "mysql_secure_installation --set-root-pass {{ mysql_root_password }}"
+  when: mysql_info.failed is true
+  # once root password set then chec the sql status using below cmd
+  #$ mysql -h mysql.ramana3490.online -u root -pExpenseApp@1
+  # run the playbook again , it will show the output bcz its connected the db
