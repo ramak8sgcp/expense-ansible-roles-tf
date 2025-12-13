@@ -1,3 +1,5 @@
 mysql_root_password: ExpenseApp@1
 app_location: /app
 component: backend
+login_host: mysql.ramana3490.online
+
